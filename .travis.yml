@@ -1,18 +1,13 @@
 language: go
 
 go:
-  - 1.12.x
+  - 1.13.x
 
 env:
   - GO111MODULE=on
 
 script:
   - make install
-  - make build
 
 after_script:
   - make test
-
-branches:
-  only:
-    - master
