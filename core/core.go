@@ -26,7 +26,7 @@ type (
 	}
 )
 
-func (t Transaction) Validate() error {
+func (t *Transaction) Validate() error {
 	if t.Amount <= 0 {
 		return errors.New("Transaction.Validate: missing amount")
 	}
