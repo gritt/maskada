@@ -8,6 +8,7 @@ help:
 	$(info Available Commands:)
 	$(info -> install                 installs project dependencies)
 	$(info -> test                    run all tests)
+	$(info -> test-unit               run unit tests)
 	$(info -> run                     run app)
 	$(info -> db-start                starts development database)
 	$(info -> db-stop                 stops development database)
@@ -19,6 +20,10 @@ install:
 .PHONY: test
 test: install
 	go test ./... -v
+
+.PHONY: test-unit
+test-unit: install
+	go test ./... -v -short
 
 .PHONY: run
 run: install

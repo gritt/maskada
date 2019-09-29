@@ -7,7 +7,5 @@ env:
   - GO111MODULE=on
 
 script:
-  - make install
+  - make test-unit
 
-after_script:
-  - make test
