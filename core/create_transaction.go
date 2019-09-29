@@ -12,7 +12,7 @@ type (
 	}
 )
 
-func (uc CreateTransactionUseCase) CreateTransaction(t Transaction) (Transaction, error) {
+func (uc *CreateTransactionUseCase) CreateTransaction(t Transaction) (Transaction, error) {
 
 	if err := t.Validate(); err != nil {
 		return Transaction{}, errors.Wrap(err, "CreateTransaction failed")
