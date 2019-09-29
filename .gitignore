@@ -13,3 +13,6 @@
 
 # Intellij IDE
 .idea/
+
+# Project
+.env

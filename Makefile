@@ -6,25 +6,40 @@ include Makefile.vars
 .PHONY: help
 help:
 	$(info Available Commands:)
-	$(info -> be-install                 Install backend dependencies)
-	$(info -> be-test                    Run backend tests)
-	$(info -> be-run                     Run backend locally)
-	$(info -> be-build                   Generate backend build)
-	$(info -> be-clean                   Cleanup backend build files)
+	$(info -> install                 installs project dependencies)
+	$(info -> test                    run all tests)
+	$(info -> run                     run app)
+	$(info -> db-start                starts development database)
+	$(info -> db-stop                 stops development database)
 
-.PHONY: be-install
-#
+.PHONY: install
+install:
+	go mod tidy -v
 
-.PHONY: be-test
-#
+.PHONY: test
+test: install
+	go test ./... -v
 
-.PHONY: be-run
-#
+.PHONY: run
+run: install
+	go run main.go
 
-.PHONY: be-build
-#
+.PHONY: db-start
+db-start:
+	docker run -d \
+	--rm \
+	-p 3306:3306 \
+	--name mysql_maskada \
+	-e MYSQL_ROOT_PASSWORD=$(DATABASE_ROOT_PASSWORD) \
+	-e MYSQL_PASSWORD=$(DATABASE_PASSWORD) \
+	-e MYSQL_USER=$(DATABASE_USERNAME) \
+	-e MYSQL_DATABASE=$(DATABASE_NAME) \
+	-v $(CURDIR)/app/db/migrations:/docker-entrypoint-initdb.d/ \
+	mysql:8
 
-.PHONY: be-clean
+.PHONY: db-stop
+db-stop:
+	docker stop -t 2 mysql_maskada
 
 # ignore unknown commands
 %:
