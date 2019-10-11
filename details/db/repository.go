@@ -7,8 +7,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 
-	"github.com/gritt/maskada/app"
 	"github.com/gritt/maskada/core"
+	"github.com/gritt/maskada/details"
 )
 
 type Repository struct {
@@ -36,7 +36,7 @@ func (r *Repository) Create(t core.Transaction) (core.Transaction, error) {
 	return t, nil
 }
 
-func NewRepository(cfg *app.Config) (repo *Repository, err error) {
+func NewRepository(cfg *details.Config) (repo *Repository, err error) {
 	dns := cfg.DatabaseDNS()
 
 	db, err := sqlx.Open("mysql", dns)

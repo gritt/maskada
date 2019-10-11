@@ -27,7 +27,7 @@ test-unit: install
 
 .PHONY: run
 run: install
-	go run main.go
+	go run cmd/maskada-api/main.go
 
 .PHONY: db-start
 db-start:
@@ -39,7 +39,7 @@ db-start:
 	-e MYSQL_PASSWORD=$(DATABASE_PASSWORD) \
 	-e MYSQL_USER=$(DATABASE_USERNAME) \
 	-e MYSQL_DATABASE=$(DATABASE_NAME) \
-	-v $(CURDIR)/app/db/migrations:/docker-entrypoint-initdb.d/ \
+	-v $(CURDIR)/details/db/migrations:/docker-entrypoint-initdb.d/ \
 	mysql:8
 
 .PHONY: db-stop
