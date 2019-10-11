@@ -12,15 +12,22 @@ type (
 	}
 )
 
-func (uc *CreateTransactionUseCase) CreateTransaction(t Transaction) (Transaction, error) {
+// TODO @gritt: Test this!
+func NewCreateTransactionUseCase(r Repository) *CreateTransactionUseCase {
+	return &CreateTransactionUseCase{
+		repository: r,
+	}
+}
+
+func (uc *CreateTransactionUseCase) Create(t Transaction) (Transaction, error) {
 
 	if err := t.Validate(); err != nil {
-		return Transaction{}, errors.Wrap(err, "CreateTransaction failed")
+		return Transaction{}, errors.Wrap(err, "Create failed")
 	}
 
 	transaction, err := uc.repository.Create(t)
 	if err != nil {
-		return Transaction{}, errors.Wrap(err, "CreateTransaction failed")
+		return Transaction{}, errors.Wrap(err, "Create failed")
 	}
 
 	return transaction, err
