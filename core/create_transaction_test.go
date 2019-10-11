@@ -51,7 +51,7 @@ func TestCreateTransactionUseCase_CreateTransaction(t *testing.T) {
 				arrange: func(m *mockRepository) {},
 			},
 			want: want{
-				err: errors.New("CreateTransaction failed: Transaction.Validate: missing amount"),
+				err: errors.New("Create failed: Transaction.Validate: missing amount"),
 			},
 		},
 		"should return err when fails to create transaction": {
@@ -62,7 +62,7 @@ func TestCreateTransactionUseCase_CreateTransaction(t *testing.T) {
 				},
 			},
 			want: want{
-				err: errors.New("CreateTransaction failed: Repository.Create: err"),
+				err: errors.New("Create failed: Repository.Create: err"),
 			},
 		},
 		"should return transaction when succeed": {
@@ -86,7 +86,7 @@ func TestCreateTransactionUseCase_CreateTransaction(t *testing.T) {
 			uc := CreateTransactionUseCase{repository: mockRepository}
 
 			// act
-			gotTrs, gotErr := uc.CreateTransaction(tc.given.trs)
+			gotTrs, gotErr := uc.Create(tc.given.trs)
 
 			// assert
 			if tc.want.err == nil {
