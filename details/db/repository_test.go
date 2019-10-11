@@ -9,8 +9,8 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/gritt/maskada/app"
 	"github.com/gritt/maskada/core"
+	"github.com/gritt/maskada/details"
 	"github.com/gritt/maskada/test"
 )
 
@@ -47,8 +47,8 @@ func TestRepository_Create(t *testing.T) {
 		t.Fatalf("mockDBConfig failed: %s", err)
 	}
 
-	tests := map[string]func(*testing.T, *app.Config){
-		"should create with success with given date": func(t *testing.T, cfg *app.Config) {
+	tests := map[string]func(*testing.T, *details.Config){
+		"should create with success with given date": func(t *testing.T, cfg *details.Config) {
 			// arrange
 			repo, err := NewRepository(cfg)
 			assert.NoError(t, err)
@@ -77,7 +77,7 @@ func TestRepository_Create(t *testing.T) {
 			assert.NoError(t, gotErr)
 			assert.Equal(t, want, got)
 		},
-		"should create with success with current date": func(t *testing.T, cfg *app.Config) {
+		"should create with success with current date": func(t *testing.T, cfg *details.Config) {
 			// arrange
 			repo, err := NewRepository(cfg)
 			assert.NoError(t, err)
@@ -113,7 +113,7 @@ func TestRepository_Create(t *testing.T) {
 			assert.Equal(t, want.Date.Hour(), got.Date.Hour())
 			assert.Equal(t, want.Date.Minute(), got.Date.Minute())
 		},
-		"should create with success with name": func(t *testing.T, cfg *app.Config) {
+		"should create with success with name": func(t *testing.T, cfg *details.Config) {
 			// arrange
 			repo, err := NewRepository(cfg)
 			assert.NoError(t, err)
@@ -153,7 +153,7 @@ func TestRepository_Create(t *testing.T) {
 	}
 }
 
-func mockDBConfig() (app.Config, error) {
+func mockDBConfig() (details.Config, error) {
 	type MockConfig struct {
 		Host     string `envconfig:"DATABASE_HOST" required:"true"`
 		Port     string `envconfig:"DATABASE_PORT" required:"true"`
@@ -165,10 +165,10 @@ func mockDBConfig() (app.Config, error) {
 	var mockConfig MockConfig
 
 	if err := envconfig.Process("", &mockConfig); err != nil {
-		return app.Config{}, err
+		return details.Config{}, err
 	}
 
-	cfg := app.Config{}
+	cfg := details.Config{}
 	cfg.Database.Host = mockConfig.Host
 	cfg.Database.Port = mockConfig.Port
 	cfg.Database.Name = mockConfig.Name
@@ -180,7 +180,7 @@ func mockDBConfig() (app.Config, error) {
 
 func setupDBData(t *testing.T, db *sqlx.DB) func() {
 	// create db schema
-	script, err := ioutil.ReadFile("../../app/db/migrations/schema.sql")
+	script, err := ioutil.ReadFile("../../details/db/migrations/schema.sql")
 	if err != nil {
 		t.Fatalf("setupDBData failed: %s", err)
 	}
@@ -190,7 +190,7 @@ func setupDBData(t *testing.T, db *sqlx.DB) func() {
 	}
 
 	// setup data
-	script, err = ioutil.ReadFile("../../app/db/test/setup.sql")
+	script, err = ioutil.ReadFile("../../details/db/test/setup.sql")
 	if err != nil {
 		t.Fatalf("setupDBData failed: %s", err)
 	}
@@ -201,7 +201,7 @@ func setupDBData(t *testing.T, db *sqlx.DB) func() {
 
 	// teardown data
 	return func() {
-		script, err := ioutil.ReadFile("../../app/db/test/teardown.sql")
+		script, err := ioutil.ReadFile("../../details/db/test/teardown.sql")
 		if err != nil {
 			t.Fatalf("setupDBData failed: %s", err)
 		}
