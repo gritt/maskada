@@ -9,6 +9,7 @@ help:
 	$(info -> install                 installs project dependencies)
 	$(info -> test                    run all tests)
 	$(info -> test-unit               run unit tests)
+	$(info -> lint                    check coding style)
 	$(info -> run                     run app)
 	$(info -> db-start                starts development database)
 	$(info -> db-stop                 stops development database)
@@ -16,14 +17,19 @@ help:
 .PHONY: install
 install:
 	go mod tidy -v
+	go get -u golang.org/x/lint/golint
 
 .PHONY: test
-test: install
+test:
 	go test ./... -v
 
 .PHONY: test-unit
-test-unit: install
+test-unit:
 	go test ./... -v -short
+
+.PHONY: lint
+lint:
+	golint ./...
 
 .PHONY: run
 run: install
