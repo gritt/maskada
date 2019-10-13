@@ -6,8 +6,9 @@ import (
 	"github.com/go-chi/chi"
 )
 
-// TODO @gritt: Test this!
+// Routes assigns a path to a request handler.
 func (api *API) Routes() *chi.Mux {
+	// TODO @gritt: Test this!
 	r := chi.NewRouter()
 
 	// TODO @gritt: Create middleware to handle authenticated users

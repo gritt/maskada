@@ -35,7 +35,7 @@ func TestNewConfig_with_missing_environment_variables(t *testing.T) {
 	// arrange
 	variables := getEnvironmentVariables()
 
-	for wantEnv, _ := range variables {
+	for wantEnv := range variables {
 		os.Clearenv()
 
 		for env, value := range variables {

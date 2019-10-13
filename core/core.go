@@ -6,16 +6,23 @@ import (
 )
 
 const (
-	Debit  = 1
+	// Debit is a transaction which is subtracted.
+	Debit = 1
+
+	// Credit is a transaction which is subtracted the next month.
 	Credit = 2
+
+	// Income is a transaction which is summed.
 	Income = 3
 )
 
 type (
+	// Category is the general class of a Transaction (eg: Health, Food).
 	Category struct {
 		Name string
 	}
 
+	// Transaction is money received or expended.
 	Transaction struct {
 		ID       int
 		Amount   int
@@ -26,6 +33,7 @@ type (
 	}
 )
 
+// Validate whether a transaction has all it's required properties set.
 func (t *Transaction) Validate() error {
 	if t.Amount <= 0 {
 		return errors.New("Transaction.Validate: missing amount")

@@ -10,8 +10,8 @@ import (
 	"github.com/gritt/maskada/details/rest"
 )
 
-// TODO @gritt: Test this!
 func main() {
+	// TODO @gritt: Test this!
 	cfg, err := details.NewConfig()
 	if err != nil {
 		log.Fatalln(err)

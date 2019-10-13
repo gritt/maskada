@@ -19,6 +19,7 @@ type skeleton struct {
 	Name     string    `json:"name"`
 }
 
+// HandleCreateTransaction receive the request and call the use case to create a transaction.
 func (api *API) HandleCreateTransaction() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		respond := func(message string, status int) {
