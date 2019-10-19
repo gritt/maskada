@@ -33,6 +33,7 @@ test-unit:
 
 .PHONY: lint
 lint:
+	go get -u golang.org/x/lint/golint
 	golint ./...
 
 .PHONY: run
