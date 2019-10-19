@@ -16,8 +16,12 @@ help:
 
 .PHONY: install
 install:
+	go get github.com/google/wire/cmd/wire
 	go mod tidy -v
-	go get -u golang.org/x/lint/golint
+
+.PHONY: wire
+wire:
+	wire $(SERVERDIR)
 
 .PHONY: test
 test:
@@ -32,8 +36,8 @@ lint:
 	golint ./...
 
 .PHONY: run
-run: install
-	go run cmd/maskada-api/main.go
+run: wire
+	go run $(SERVERDIR)
 
 .PHONY: db-start
 db-start:
