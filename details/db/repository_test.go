@@ -149,14 +149,89 @@ func TestRepository_Create(t *testing.T) {
 
 	for name, run := range tests {
 		t.Run(name, func(t *testing.T) {
-			// arrange
 			r, err := NewRepository(&cfg)
+			assert.NoError(t, err)
+
+			run(t, r)
+		})
+	}
+}
+
+func TestRepository_Find(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+
+	transactions := []core.Transaction{
+		{ID: 1, Amount: 99, Type: core.Credit, Category: core.Category{Name: "Entertainment"}, Date: time.Now().UTC()},
+		{ID: 2, Amount: 11, Type: core.Credit, Category: core.Category{Name: "Food"}, Date: time.Now().UTC()},
+		{ID: 3, Amount: 32, Type: core.Credit, Category: core.Category{Name: "Food"}, Date: time.Now().UTC()},
+		{ID: 4, Amount: 5300, Type: core.Income, Category: core.Category{Name: "Work"}, Date: time.Now().UTC()},
+		{ID: 5, Amount: 129, Type: core.Debit, Category: core.Category{Name: "Home"}, Date: time.Now().UTC(), Name: "Internet"},
+		{ID: 6, Amount: 129, Type: core.Debit, Category: core.Category{Name: "Home"}, Date: time.Now().UTC(), Name: "Electricity"},
+	}
+
+	cfg, err := mockDBConfig()
+	if err != nil {
+		t.Fatalf("mockDBConfig failed: %s", err)
+	}
+
+	tests := map[string]func(t *testing.T, r *Repository){
+		"when connection is down": func(t *testing.T, r *Repository) {
+			// arrange
+			teardown := setupDBData(t, r.db)
+			teardown()
 
 			// act
-			run(t, r)
+			_, gotErr := r.Find()
 
 			// assert
+			assert.EqualError(t, gotErr, "Repository.Find failed: sql: database is closed")
+		},
+		"when transactions are found": func(t *testing.T, r *Repository) {
+			// arrange
+			teardown := setupDBData(t, r.db)
+			defer teardown()
+
+			// act
+			got, gotErr := r.Find()
+
+			// assert
+			assert.NoError(t, gotErr)
+			for want, gotTrs := range got {
+				assert.Equal(t, transactions[want].ID, gotTrs.ID)
+				assert.Equal(t, transactions[want].Amount, gotTrs.Amount)
+				assert.Equal(t, transactions[want].Type, gotTrs.Type)
+				assert.Equal(t, transactions[want].Category, gotTrs.Category)
+				assert.Equal(t, transactions[want].Date.Format(time.RFC822), gotTrs.Date.Format(time.RFC822))
+				assert.Equal(t, transactions[want].Name, gotTrs.Name)
+			}
+		},
+		"when no transactions are found": func(t *testing.T, r *Repository) {
+			// arrange
+			teardown := setupDBData(t, r.db)
+			defer teardown()
+
+			_, err := r.db.Exec(`DELETE from transaction`)
+			if err != nil {
+				t.Fatalf("when no transactions are found failed: %s", err)
+			}
+
+			// act
+			got, gotErr := r.Find()
+
+			// assert
+			assert.Empty(t, got)
+			assert.NoError(t, gotErr)
+		},
+	}
+
+	for name, run := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := NewRepository(&cfg)
 			assert.NoError(t, err)
+
+			run(t, r)
 		})
 	}
 }
