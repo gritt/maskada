@@ -47,12 +47,10 @@ func TestRepository_Create(t *testing.T) {
 		t.Fatalf("mockDBConfig failed: %s", err)
 	}
 
-	tests := map[string]func(*testing.T, *details.Config){
-		"should create with success with given date": func(t *testing.T, cfg *details.Config) {
+	tests := map[string]func(*testing.T, *Repository){
+		"should create with success with given date": func(t *testing.T, r *Repository) {
 			// arrange
-			repo, err := NewRepository(cfg)
-			assert.NoError(t, err)
-			teardown := setupDBData(t, repo.db)
+			teardown := setupDBData(t, r.db)
 			defer teardown()
 
 			given := core.Transaction{
@@ -63,7 +61,7 @@ func TestRepository_Create(t *testing.T) {
 			}
 
 			// act
-			got, gotErr := repo.Create(given)
+			got, gotErr := r.Create(given)
 
 			want := core.Transaction{
 				ID:       7,
@@ -77,11 +75,9 @@ func TestRepository_Create(t *testing.T) {
 			assert.NoError(t, gotErr)
 			assert.Equal(t, want, got)
 		},
-		"should create with success with current date": func(t *testing.T, cfg *details.Config) {
+		"should create with success with current date": func(t *testing.T, r *Repository) {
 			// arrange
-			repo, err := NewRepository(cfg)
-			assert.NoError(t, err)
-			teardown := setupDBData(t, repo.db)
+			teardown := setupDBData(t, r.db)
 			defer teardown()
 
 			given := core.Transaction{
@@ -91,7 +87,7 @@ func TestRepository_Create(t *testing.T) {
 			}
 
 			// act
-			got, gotErr := repo.Create(given)
+			got, gotErr := r.Create(given)
 
 			want := core.Transaction{
 				ID:       7,
@@ -113,11 +109,9 @@ func TestRepository_Create(t *testing.T) {
 			assert.Equal(t, want.Date.Hour(), got.Date.Hour())
 			assert.Equal(t, want.Date.Minute(), got.Date.Minute())
 		},
-		"should create with success with name": func(t *testing.T, cfg *details.Config) {
+		"should create with success with name": func(t *testing.T, r *Repository) {
 			// arrange
-			repo, err := NewRepository(cfg)
-			assert.NoError(t, err)
-			teardown := setupDBData(t, repo.db)
+			teardown := setupDBData(t, r.db)
 			defer teardown()
 
 			given := core.Transaction{
@@ -129,7 +123,7 @@ func TestRepository_Create(t *testing.T) {
 			}
 
 			// act
-			got, gotErr := repo.Create(given)
+			got, gotErr := r.Create(given)
 
 			want := core.Transaction{
 				ID:       7,
@@ -148,7 +142,14 @@ func TestRepository_Create(t *testing.T) {
 
 	for name, run := range tests {
 		t.Run(name, func(t *testing.T) {
-			run(t, &cfg)
+			// arrange
+			r, err := NewRepository(&cfg)
+
+			// act
+			run(t, r)
+
+			// assert
+			assert.NoError(t, err)
 		})
 	}
 }
