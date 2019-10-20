@@ -1,7 +1,6 @@
 package core
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,79 +13,95 @@ func TestTransaction_validate(t *testing.T) {
 	name := test.RandomName()
 	invalidType := 1000
 
-	tests := map[string]struct {
-		givenTrs Transaction
-		wantErr  error
-	}{
-		"should return err when missing amount": {
-			givenTrs: Transaction{},
-			wantErr:  errors.New("Transaction.Validate: missing amount"),
+	tests := map[string]func(t *testing.T){
+		"when missing amount": func(t *testing.T) {
+			// arrange
+			trs := Transaction{}
+
+			// act
+			gotErr := trs.Validate()
+
+			// assert
+			assert.EqualError(t, gotErr, "Transaction.Validate: missing amount")
 		},
-		"should return err when zero amount": {
-			givenTrs: Transaction{
-				Amount: 0,
-			},
-			wantErr: errors.New("Transaction.Validate: missing amount"),
+		"when zero amount": func(t *testing.T) {
+			// arrange
+			trs := Transaction{Amount: 0}
+
+			// act
+			gotErr := trs.Validate()
+
+			// assert
+			assert.EqualError(t, gotErr, "Transaction.Validate: missing amount")
 		},
-		"should return err when negative amount": {
-			givenTrs: Transaction{
-				Amount: -1,
-			},
-			wantErr: errors.New("Transaction.Validate: missing amount"),
+		"when negative amount": func(t *testing.T) {
+			// arrange
+			trs := Transaction{Amount: -1}
+
+			// act
+			gotErr := trs.Validate()
+
+			// assert
+			assert.EqualError(t, gotErr, "Transaction.Validate: missing amount")
 		},
-		"should return err when missing type": {
-			givenTrs: Transaction{
+		"when missing type": func(t *testing.T) {
+			// arrange
+			trs := Transaction{
 				Amount: amount,
-			},
-			wantErr: errors.New("Transaction.Validate: missing type"),
+			}
+
+			// act
+			gotErr := trs.Validate()
+
+			// assert
+			assert.EqualError(t, gotErr, "Transaction.Validate: missing type")
 		},
-		"should return err when invalid type": {
-			givenTrs: Transaction{
-				Amount: amount,
-				Type:   invalidType,
-			},
-			wantErr: errors.New("Transaction.Validate: missing type"),
+		"when invalid type": func(t *testing.T) {
+			// arrange
+			trs := Transaction{Amount: amount, Type: invalidType}
+
+			// act
+			gotErr := trs.Validate()
+
+			// assert
+			assert.EqualError(t, gotErr, "Transaction.Validate: missing type")
 		},
-		"should return err when invalid category": {
-			givenTrs: Transaction{
-				Amount: amount,
-				Type:   Debit,
-			},
-			wantErr: errors.New("Transaction.Validate: missing category"),
+		"when invalid category": func(t *testing.T) {
+			// arrange
+			trs := Transaction{Amount: amount, Type: Debit}
+
+			// act
+			gotErr := trs.Validate()
+
+			// assert
+			assert.EqualError(t, gotErr, "Transaction.Validate: missing category")
 		},
-		"should return no err when valid debit transaction given": {
-			givenTrs: Transaction{
-				Amount:   amount,
-				Type:     Debit,
-				Category: Category{Name: name},
-			},
+		"when valid debit transaction given": func(t *testing.T) {
+			// arrange
+			trs := Transaction{Amount: amount, Type: Debit, Category: Category{Name: name}}
+
+			// act / assert
+			assert.NoError(t, trs.Validate())
 		},
-		"should return no err when valid credit transaction given": {
-			givenTrs: Transaction{
-				Amount:   amount,
-				Type:     Credit,
-				Category: Category{Name: name},
-			},
+		"when valid credit transaction given": func(t *testing.T) {
+			// arrange
+			trs := Transaction{Amount: amount, Type: Credit, Category: Category{Name: name}}
+
+			// act / assert
+			assert.NoError(t, trs.Validate())
 		},
-		"should return no err when valid income transaction given": {
-			givenTrs: Transaction{
-				Amount:   amount,
-				Type:     Income,
-				Category: Category{Name: name},
-			},
+		"when valid income transaction given": func(t *testing.T) {
+			// arrange
+			trs := Transaction{Amount: amount, Type: Income, Category: Category{Name: name}}
+
+			// act / assert
+			assert.NoError(t, trs.Validate())
 		},
 	}
 
-	for name, tc := range tests {
+	for name, run := range tests {
 		t.Run(name, func(t *testing.T) {
-
-			gotErr := tc.givenTrs.Validate()
-
-			if tc.wantErr == nil {
-				assert.NoError(t, gotErr)
-			} else {
-				assert.EqualError(t, gotErr, tc.wantErr.Error())
-			}
+			run(t)
 		})
 	}
 }
