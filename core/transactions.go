@@ -3,13 +3,19 @@ package core
 import "github.com/pkg/errors"
 
 type (
-	// Repository represents a client able to save a transaction.
+	// Repository represents a client able to save and find a transaction.
 	Repository interface {
 		Create(Transaction) (Transaction, error)
+		Find() ([]Transaction, error)
 	}
 
 	// CreateTransactionUseCase implements the business logic to create a transaction.
 	CreateTransactionUseCase struct {
+		repository Repository
+	}
+
+	// ListTransactionUseCase implements the business logic to find a transaction.
+	ListTransactionUseCase struct {
 		repository Repository
 	}
 )
@@ -31,4 +37,19 @@ func (uc *CreateTransactionUseCase) Create(t Transaction) (Transaction, error) {
 	}
 
 	return transaction, nil
+}
+
+// NewListTransactionUseCase initialize the use case.
+func NewListTransactionUseCase(r Repository) *ListTransactionUseCase {
+	return &ListTransactionUseCase{repository: r}
+}
+
+// List transaction(s).
+func (uc *ListTransactionUseCase) List() ([]Transaction, error) {
+	transactions, err := uc.repository.Find()
+	if err != nil {
+		return []Transaction{}, errors.Wrap(err, "List failed")
+	}
+
+	return transactions, nil
 }
