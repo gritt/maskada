@@ -16,14 +16,11 @@ type (
 
 // NewCreateTransactionUseCase initialize the use case.
 func NewCreateTransactionUseCase(r Repository) *CreateTransactionUseCase {
-	return &CreateTransactionUseCase{
-		repository: r,
-	}
+	return &CreateTransactionUseCase{repository: r}
 }
 
 // Create a transaction.
 func (uc *CreateTransactionUseCase) Create(t Transaction) (Transaction, error) {
-
 	if err := t.Validate(); err != nil {
 		return Transaction{}, errors.Wrap(err, "Create failed")
 	}
@@ -33,5 +30,5 @@ func (uc *CreateTransactionUseCase) Create(t Transaction) (Transaction, error) {
 		return Transaction{}, errors.Wrap(err, "Create failed")
 	}
 
-	return transaction, err
+	return transaction, nil
 }
