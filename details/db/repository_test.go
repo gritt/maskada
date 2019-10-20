@@ -48,7 +48,18 @@ func TestRepository_Create(t *testing.T) {
 	}
 
 	tests := map[string]func(*testing.T, *Repository){
-		"should create with success with given date": func(t *testing.T, r *Repository) {
+		"when connection is down": func(t *testing.T, r *Repository) {
+			// arrange
+			teardown := setupDBData(t, r.db)
+			teardown()
+
+			// act
+			_, gotErr := r.Create(core.Transaction{})
+
+			// assert
+			assert.EqualError(t, gotErr, "Repository.Create failed: sql: database is closed")
+		},
+		"when a date is given": func(t *testing.T, r *Repository) {
 			// arrange
 			teardown := setupDBData(t, r.db)
 			defer teardown()
@@ -75,7 +86,7 @@ func TestRepository_Create(t *testing.T) {
 			assert.NoError(t, gotErr)
 			assert.Equal(t, want, got)
 		},
-		"should create with success with current date": func(t *testing.T, r *Repository) {
+		"when no date is given, use current time": func(t *testing.T, r *Repository) {
 			// arrange
 			teardown := setupDBData(t, r.db)
 			defer teardown()
@@ -103,13 +114,9 @@ func TestRepository_Create(t *testing.T) {
 			assert.Equal(t, want.Amount, got.Amount)
 			assert.Equal(t, want.Type, got.Type)
 			assert.Equal(t, want.Category, got.Category)
-			assert.Equal(t, want.Date.Day(), got.Date.Day())
-			assert.Equal(t, want.Date.Month(), got.Date.Month())
-			assert.Equal(t, want.Date.Year(), got.Date.Year())
-			assert.Equal(t, want.Date.Hour(), got.Date.Hour())
-			assert.Equal(t, want.Date.Minute(), got.Date.Minute())
+			assert.Equal(t, want.Date.Format(time.RFC3339), got.Date.Format(time.RFC3339))
 		},
-		"should create with success with name": func(t *testing.T, r *Repository) {
+		"when a name is given": func(t *testing.T, r *Repository) {
 			// arrange
 			teardown := setupDBData(t, r.db)
 			defer teardown()
