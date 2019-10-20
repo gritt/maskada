@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"time"
 
 	// imports mysql db driver
@@ -50,4 +51,45 @@ func (r *Repository) Create(t core.Transaction) (core.Transaction, error) {
 	t.ID = int(id)
 
 	return t, nil
+}
+
+// Find transactions in db.
+func (r *Repository) Find() ([]core.Transaction, error) {
+	type row struct {
+		ID       int            `db:"id"`
+		Amount   int            `db:"amount"`
+		Type     int            `db:"type"`
+		Category string         `db:"category"`
+		Date     time.Time      `db:"date"`
+		Name     sql.NullString `db:"name"`
+	}
+
+	query := `SELECT 
+				t.id "id", 
+				t.amount "amount", 
+				t.type "type", 
+				t.category "category",
+				t.date "date", 
+				t.description "name"
+				FROM transaction t
+				ORDER by t.date`
+
+	var rows []row
+	if err := r.db.Select(&rows, query); err != nil {
+		return []core.Transaction{}, errors.Wrap(err, "Repository.Find failed")
+	}
+
+	var trs []core.Transaction
+	for _, row := range rows {
+		trs = append(trs, core.Transaction{
+			ID:       row.ID,
+			Amount:   row.Amount,
+			Type:     row.Type,
+			Category: core.Category{Name: row.Category},
+			Date:     row.Date,
+			Name:     row.Name.String,
+		})
+	}
+
+	return trs, nil
 }
