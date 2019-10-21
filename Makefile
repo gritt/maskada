@@ -25,11 +25,11 @@ wire:
 
 .PHONY: test
 test:
-	go test ./... -v
+	go test ./... -v -race -coverprofile=coverage.txt -covermode=atomic
 
 .PHONY: test-unit
 test-unit:
-	go test ./... -v -short
+	go test ./... -v -short -race -coverprofile=coverage.txt -covermode=atomic
 
 .PHONY: lint
 lint:
