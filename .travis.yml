@@ -3,13 +3,19 @@ language: go
 go:
   - 1.13.x
 
+services:
+  - mysql
+
 env:
-  - GO111MODULE=on
+  - GO111MODULE=on DATABASE_HOST=127.0.0.1 DATABASE_PORT=3306 DATABASE_NAME=maskada DATABASE_USERNAME=travis DATABASE_PASSWORD=
+
+before_install:
+  - mysql -e 'CREATE DATABASE maskada;'
 
 script:
   - make install
   - make lint
-  - make test-unit
+  - make test
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
