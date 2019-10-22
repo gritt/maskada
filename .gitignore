@@ -17,3 +17,6 @@
 # Project
 .env
 coverage.txt
+
+# asdf
+.tool-versions
