@@ -11,13 +11,15 @@ import (
 
 func TestNewAPI(t *testing.T) {
 	// arrange
-	mockTransactionCreator := new(mockTransactionCreator)
+	c := new(mockTransactionCreator)
+	l := new(mockTransactionLister)
 
 	// act
-	got := NewAPI(mockTransactionCreator)
+	got := NewAPI(c, l)
 
 	want := &API{
-		TransactionCreator: mockTransactionCreator,
+		TransactionCreator: c,
+		TransactionLister:  l,
 	}
 
 	// assert
@@ -31,4 +33,13 @@ type mockTransactionCreator struct {
 func (m *mockTransactionCreator) Create(t core.Transaction) (core.Transaction, error) {
 	args := m.Called(t)
 	return args.Get(0).(core.Transaction), args.Error(1)
+}
+
+type mockTransactionLister struct {
+	mock.Mock
+}
+
+func (m *mockTransactionLister) List() ([]core.Transaction, error) {
+	args := m.Called()
+	return args.Get(0).([]core.Transaction), args.Error(1)
 }

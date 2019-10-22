@@ -25,7 +25,8 @@ func initAPI() (*rest.API, error) {
 		return nil, err
 	}
 	createTransactionUseCase := core.NewCreateTransactionUseCase(repository)
-	api := rest.NewAPI(createTransactionUseCase)
+	listTransactionUseCase := core.NewListTransactionUseCase(repository)
+	api := rest.NewAPI(createTransactionUseCase, listTransactionUseCase)
 	return api, nil
 }
 
@@ -34,3 +35,5 @@ func initAPI() (*rest.API, error) {
 var repositorySet = wire.NewSet(details.NewConfig, wire.Bind(new(core.Repository), new(*db.Repository)), db.NewRepository)
 
 var createTransactionSet = wire.NewSet(wire.Bind(new(rest.TransactionCreator), new(*core.CreateTransactionUseCase)), core.NewCreateTransactionUseCase)
+
+var listTransactionSet = wire.NewSet(wire.Bind(new(rest.TransactionLister), new(*core.ListTransactionUseCase)), core.NewListTransactionUseCase)

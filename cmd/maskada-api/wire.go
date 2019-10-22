@@ -22,10 +22,16 @@ var createTransactionSet = wire.NewSet(
 	core.NewCreateTransactionUseCase,
 )
 
+var listTransactionSet = wire.NewSet(
+	wire.Bind(new(rest.TransactionLister), new(*core.ListTransactionUseCase)),
+	core.NewListTransactionUseCase,
+)
+
 func initAPI() (*rest.API, error) {
 	panic(wire.Build(
 		repositorySet,
 		createTransactionSet,
+		listTransactionSet,
 		rest.NewAPI,
 	))
 }
