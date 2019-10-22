@@ -15,6 +15,7 @@ func (api *API) Routes() *chi.Mux {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Method(http.MethodPost, "/transaction", api.HandleCreateTransaction())
+		r.Method(http.MethodGet, "/transaction", api.HandleListTransaction())
 	})
 
 	return r
