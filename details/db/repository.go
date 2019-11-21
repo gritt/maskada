@@ -33,6 +33,10 @@ func NewRepository(cfg *details.Config) (repo *Repository, err error) {
 
 // Create persists a transaction in db.
 func (r *Repository) Create(t core.Transaction) (core.Transaction, error) {
+	if err := r.CreateCategory(t.Category); err != nil {
+		return core.Transaction{}, err
+	}
+
 	if t.Date.String() == "0001-01-01 00:00:00 +0000 UTC" {
 		t.Date = time.Now().UTC()
 	}
@@ -51,6 +55,18 @@ func (r *Repository) Create(t core.Transaction) (core.Transaction, error) {
 	t.ID = int(id)
 
 	return t, nil
+}
+
+// CreateCategory persists a category in db.
+func (r *Repository) CreateCategory(category core.Category) error {
+	query := "INSERT IGNORE INTO `category` (`name`) VALUES (?)"
+
+	_, err := r.db.Exec(query, category.Name)
+	if err != nil {
+		return errors.Wrap(err, "Repository.CreateCategory failed")
+	}
+
+	return nil
 }
 
 // Find transactions in db.
