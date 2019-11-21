@@ -57,7 +57,7 @@ func TestRepository_Create(t *testing.T) {
 			_, gotErr := r.Create(core.Transaction{})
 
 			// assert
-			assert.EqualError(t, gotErr, "Repository.Create failed: sql: database is closed")
+			assert.EqualError(t, gotErr, "Repository.CreateCategory failed: sql: database is closed")
 		},
 		"when a date is given": func(t *testing.T, r *Repository) {
 			// arrange
@@ -144,6 +144,85 @@ func TestRepository_Create(t *testing.T) {
 			// assert
 			assert.NoError(t, gotErr)
 			assert.Equal(t, want, got)
+		},
+	}
+
+	for name, run := range tests {
+		t.Run(name, func(t *testing.T) {
+			r, err := NewRepository(&cfg)
+			assert.NoError(t, err)
+
+			run(t, r)
+		})
+	}
+}
+
+func TestRepository_CreateCategory(t *testing.T) {
+	if testing.Short() {
+		t.SkipNow()
+	}
+
+	type row struct {
+		Name string `db:"name"`
+	}
+
+	cfg, err := mockDBConfig()
+	if err != nil {
+		t.Fatalf("mockDBConfig failed: %s", err)
+	}
+
+	tests := map[string]func(*testing.T, *Repository){
+		"when connection is down": func(t *testing.T, r *Repository) {
+			// arrange
+			teardown := setupDBData(t, r.db)
+			teardown()
+
+			// act
+			_, gotErr := r.Create(core.Transaction{})
+
+			// assert
+			assert.EqualError(t, gotErr, "Repository.CreateCategory failed: sql: database is closed")
+		},
+		"when category does not exists": func(t *testing.T, r *Repository) {
+			// arrange
+			teardown := setupDBData(t, r.db)
+			defer teardown()
+
+			testCategory := test.RandomName()
+			given := core.Category{Name: testCategory}
+
+			// act
+			gotErr := r.CreateCategory(given)
+
+			// assert
+			assert.NoError(t, gotErr)
+
+			var rows []row
+			if err := r.db.Select(&rows, `SELECT * FROM category WHERE name = (?)`, testCategory); err != nil {
+				t.Fail()
+			}
+			assert.Equal(t, testCategory, rows[0].Name)
+		},
+		"when category exists": func(t *testing.T, r *Repository) {
+			// arrange
+			teardown := setupDBData(t, r.db)
+			defer teardown()
+
+			testCategory := "Entertainment"
+			given := core.Category{Name: testCategory}
+
+			// act
+			gotErr := r.CreateCategory(given)
+
+			// assert
+			assert.NoError(t, gotErr)
+
+			var rows []row
+			if err := r.db.Select(&rows, `SELECT * FROM category WHERE name = (?)`, testCategory); err != nil {
+				t.Fail()
+			}
+			assert.Len(t, rows, 1)
+			assert.Equal(t, testCategory, rows[0].Name)
 		},
 	}
 
