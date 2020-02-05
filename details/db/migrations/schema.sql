@@ -15,11 +15,13 @@ CREATE TABLE `transaction`
     `amount`      INTEGER(11) NOT NULL DEFAULT 0,
     `type`        INTEGER(11) NOT NULL,
     `category`    VARCHAR(80) NOT NULL,
+    CONSTRAINT `fk_category`
+        FOREIGN KEY (`category`) REFERENCES `category` (`name`)
+            ON DELETE RESTRICT
+            ON UPDATE CASCADE,
     `description` VARCHAR(80) NULL,
     `date`        TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY KEY (`id`),
-    FOREIGN KEY (`category`) REFERENCES `category` (`name`)
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci;
