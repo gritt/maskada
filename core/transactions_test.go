@@ -42,7 +42,7 @@ func TestCreateTransactionUseCase_CreateTransaction(t *testing.T) {
 			got, gotErr := uc.Create(Transaction{})
 
 			// assert
-			assert.EqualError(t, gotErr, "Create failed: Transaction.Validate: missing amount")
+			assert.EqualError(t, gotErr, "Create failed: Transaction.Validate: invalid amount")
 			assert.Empty(t, got)
 		},
 		"when repository fails to create transaction": func(t *testing.T, m *mockRepository) {

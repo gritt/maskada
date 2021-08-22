@@ -22,7 +22,7 @@ func TestTransaction_validate(t *testing.T) {
 			gotErr := trs.Validate()
 
 			// assert
-			assert.EqualError(t, gotErr, "Transaction.Validate: missing amount")
+			assert.EqualError(t, gotErr, "Transaction.Validate: invalid amount")
 		},
 		"when zero amount": func(t *testing.T) {
 			// arrange
@@ -32,7 +32,7 @@ func TestTransaction_validate(t *testing.T) {
 			gotErr := trs.Validate()
 
 			// assert
-			assert.EqualError(t, gotErr, "Transaction.Validate: missing amount")
+			assert.EqualError(t, gotErr, "Transaction.Validate: invalid amount")
 		},
 		"when negative amount": func(t *testing.T) {
 			// arrange
@@ -42,7 +42,7 @@ func TestTransaction_validate(t *testing.T) {
 			gotErr := trs.Validate()
 
 			// assert
-			assert.EqualError(t, gotErr, "Transaction.Validate: missing amount")
+			assert.EqualError(t, gotErr, "Transaction.Validate: invalid amount")
 		},
 		"when missing type": func(t *testing.T) {
 			// arrange
@@ -54,7 +54,7 @@ func TestTransaction_validate(t *testing.T) {
 			gotErr := trs.Validate()
 
 			// assert
-			assert.EqualError(t, gotErr, "Transaction.Validate: missing type")
+			assert.EqualError(t, gotErr, "Transaction.Validate: invalid type")
 		},
 		"when invalid type": func(t *testing.T) {
 			// arrange
@@ -64,7 +64,7 @@ func TestTransaction_validate(t *testing.T) {
 			gotErr := trs.Validate()
 
 			// assert
-			assert.EqualError(t, gotErr, "Transaction.Validate: missing type")
+			assert.EqualError(t, gotErr, "Transaction.Validate: invalid type")
 		},
 		"when invalid category": func(t *testing.T) {
 			// arrange
@@ -74,7 +74,7 @@ func TestTransaction_validate(t *testing.T) {
 			gotErr := trs.Validate()
 
 			// assert
-			assert.EqualError(t, gotErr, "Transaction.Validate: missing category")
+			assert.EqualError(t, gotErr, "Transaction.Validate: invalid category")
 		},
 		"when valid debit transaction given": func(t *testing.T) {
 			// arrange

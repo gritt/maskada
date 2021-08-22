@@ -36,15 +36,15 @@ type (
 // Validate whether a transaction has all it's required properties set.
 func (t *Transaction) Validate() error {
 	if t.Amount <= 0 {
-		return errors.New("Transaction.Validate: missing amount")
+		return errors.New("Transaction.Validate: invalid amount")
 	}
 
 	if t.Type != Debit && t.Type != Credit && t.Type != Income {
-		return errors.New("Transaction.Validate: missing type")
+		return errors.New("Transaction.Validate: invalid type")
 	}
 
 	if t.Category.Name == "" {
-		return errors.New("Transaction.Validate: missing category")
+		return errors.New("Transaction.Validate: invalid category")
 	}
 
 	return nil
